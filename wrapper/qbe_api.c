@@ -17,6 +17,20 @@ static Target *tlist[] = {&T_amd64_sysv,
                           &T_rv64,
                           0};
 
+char debug['Z' + 1] = {
+    ['P'] = 0, /* parsing */
+    ['M'] = 0, /* memory optimization */
+    ['N'] = 0, /* ssa construction */
+    ['C'] = 0, /* copy elimination */
+    ['G'] = 0, /* gvn/gcm */
+    ['K'] = 0, /* if-conversion */
+    ['A'] = 0, /* abi lowering */
+    ['I'] = 0, /* instruction selection */
+    ['L'] = 0, /* liveness */
+    ['S'] = 0, /* spilling */
+    ['R'] = 0, /* reg. allocation */
+};
+
 Target T;
 
 static FILE *outf;
@@ -83,10 +97,10 @@ static FILE *string_to_file(const char *s) {
 #endif
 }
 
-int qbe_compile(const char *ir, const char *target,
-                char *out_buf, int buf_size) {
+int qbe_compile(const char *ir, const char *target, char *out_buf,
+                int buf_size) {
   T = Deftgt;
-  if (target){
+  if (target) {
     for (Target **t = tlist; *t; t++) {
       if (strcmp(target, (*t)->name) == 0) {
         T = **t;

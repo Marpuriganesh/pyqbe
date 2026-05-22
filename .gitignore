@@ -64,3 +64,5 @@ cmake_install.cmake
 .vscode/
 .idea/
 *DS_Store
+
+temp/
