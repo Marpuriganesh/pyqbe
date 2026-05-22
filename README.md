@@ -2,6 +2,8 @@
 
 Python bindings for [QBE](https://c9x.me/compile/), a compiler backend that generates optimized assembly. Pass QBE IR as a string, get assembly back — no external QBE binary needed.
 
+> **Note:** This is a hobby project.
+
 ## What is this?
 
 [QBE](https://c9x.me/compile/) is a small, fast compiler backend (think LLVM but ~10k lines of C). `pyqbe` wraps it as a Python package so you can generate assembly programmatically without shelling out to a binary.
