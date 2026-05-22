@@ -82,7 +82,7 @@ Python string (QBE IR)
 ## Related
 
 - [QBE](https://c9x.me/compile/) — the compiler backend this wraps
-- [LowPy](https://github.com/Marpuriganesh/lowpy-python) — systems programming language using pyqbe as its backend
+- [LowPy](https://gitlab.com/my-compiler/lowpy-python) — systems programming language using pyqbe as its backend
 
 ## License
 
