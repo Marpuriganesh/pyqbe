@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+.venv/
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.pytype/
+.pyre/
+
+# C/C++
+*.o
+*.obj
+*.lo
+*.la
+*.al
+*.libs
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+*.a
+*.lib
+*.ncb
+*.sdf
+*.opensdf
+*.ipch
+*.pch
+*.pdb
+*.ilk
+*.idb
+*.class
+
+# Build directories
+build/
+dist/
+Debug/
+Release/
+cmake-build-debug/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+*.cmake
+
+# Editor temp files
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+# IDE files
+.vscode/
+.idea/
+*DS_Store
