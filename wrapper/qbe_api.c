@@ -1,5 +1,7 @@
 #include "../qbe/all.h"
 #include "../qbe/config.h"
+#include "include/pyqbe.h"
+#include <stdlib.h>
 #include <string.h>
 
 extern Target T_amd64_sysv;
@@ -97,9 +99,9 @@ static FILE *string_to_file(const char *s) {
 #endif
 }
 
-int qbe_compile(const char *ir, const char *target, char *out_buf,
-                int buf_size) {
+int qbe_compile(const char *ir, const char *target, QBE_Buffer *buf) {
   T = Deftgt;
+
   if (target) {
     for (Target **t = tlist; *t; t++) {
       if (strcmp(target, (*t)->name) == 0) {
@@ -110,13 +112,30 @@ int qbe_compile(const char *ir, const char *target, char *out_buf,
   }
 
   FILE *inf = string_to_file(ir);
-  outf = fmemopen(out_buf, buf_size, "w");
+
+  outf = tmpfile();
 
   parse(inf, "<string>", dbgfile, data, func);
+
   fclose(inf);
 
   T.emitfin(outf);
+
+  fflush(outf);
+
+  fseek(outf, 0, SEEK_END);
+  long size = ftell(outf);
+  rewind(outf);
+
+  buf->data = malloc(size + 1);
+  buf->len = size;
+  buf->cap = size + 1;
+
+  fread(buf->data, 1, size, outf);
+
+  buf->data[size] = '\0';
+
   fclose(outf);
-  out_buf[buf_size - 1] = '\0';
+
   return 0;
 }
