@@ -11,7 +11,7 @@ py = import('python').find_installation(pure: false)
 pybind11_dep = dependency('pybind11')
 
 py.extension_module('pyqbe',
-    'pyqbe.cpp',
+    'wrapper/binding.cpp',
     install: true,
     dependencies : [pybind11_dep],
 )
