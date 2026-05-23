@@ -5,3 +5,7 @@ requires-python = ">=3.14"
 dependencies = [
     "pybind11>=3.0.4",
 ]
+
+[build-system]
+build-backend = 'mesonpy'
+requires = ['meson-python','pybind11']
