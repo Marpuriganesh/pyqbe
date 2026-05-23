@@ -8,3 +8,7 @@ dependencies = []
 [build-system]
 build-backend = 'mesonpy'
 requires = ['meson-python','pybind11']
+
+[project.urls]
+Homepage = "https://github.com/Marpuriganesh/pyqbe"
+Repository = "https://github.com/Marpuriganesh/pyqbe"
