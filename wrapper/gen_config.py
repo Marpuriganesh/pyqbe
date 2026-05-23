@@ -1,5 +1,5 @@
 import platform
-from pathlib import Path
+import os
 
 
 def main():
@@ -24,12 +24,14 @@ def main():
             target = "T_amd64_sysv"
 
     # Locate qbe/config.h relative to this script's directory
-    script_dir = Path(__file__).parent.resolve()
-    output_file = script_dir / "qbe" / "config.h"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # output_file = script_dir / "qbe" / "config.h" --- IGNORE ---
+    output_file = os.path.join(script_dir,"..", "qbe", "config.h")
 
     # Ensure the directory exists and write the file
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    output_file.write_text(f"#define Deftgt {target}\n")
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, "w") as f:
+        f.write(f"#define Deftgt {target}\n")
 
 
 if __name__ == "__main__":
