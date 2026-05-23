@@ -11,47 +11,6 @@ project(
 py = import('python').find_installation(pure: false)
 pybind11_dep = dependency('pybind11')
 
-# # 1. Native cross-platform config.h generation
-# cdata = configuration_data()
-
-# # Detect host architecture to choose the correct target backend string
-# host_cpu = host_machine.cpu_family()
-# if host_cpu == 'x86_64'
-#     cdata.set_quoted('Deftarg', 'amd64')
-# elif host_cpu == 'aarch64'
-#     cdata.set_quoted('Deftarg', 'arm64')
-# elif host_cpu == 'riscv64'
-#     cdata.set_quoted('Deftarg', 'rv64')
-# else
-#     error('Unsupported architecture: ' + host_cpu)
-# endif
-
-# # Dynamically generate config.h in the build directory
-# configure_file(
-#     output: 'config.h',
-#     configuration: cdata
-# )
-
-cdata = configuration_data({
-  'STRING' : '"foo"',
-  'INT' : 42,
-  'DEFINED' : true,
-  'UNDEFINED' : false,
-})
-
-configure_file(output : 'config1.h',
-  configuration : cdata,
-)
-
-configure_file(output : 'config2.h',
-  configuration : {
-    'STRING' : '"foo"',
-    'INT' : 42,
-    'DEFINED' : true,
-    'UNDEFINED' : false,
-  }
-)
-
 
 py.extension_module('_pyqbe',
     'wrapper/binding.cpp',
@@ -100,4 +59,4 @@ py.install_sources(
 )
 
 # Generate config.h
-run_command('make', '-C', 'qbe', 'config.h', check: true)
+run_command('python', 'wrapper/gen_config.py', check: true)
