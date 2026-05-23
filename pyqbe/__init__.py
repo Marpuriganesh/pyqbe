@@ -11,7 +11,10 @@ except PackageNotFoundError:
     __version__ = "unknown"  # not installed yet
 
 
-class Target:
+from enum import StrEnum
+
+
+class Target(StrEnum):
     AMD64_SYSV = "amd64_sysv"
     AMD64_APPLE = "amd64_apple"
     AMD64_WIN = "amd64_win"

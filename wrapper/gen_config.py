@@ -7,21 +7,23 @@ def main():
     system = platform.system()
     machine = platform.machine()
 
-    # 1. Check for macOS (Darwin)
-    if "Darwin" in system:
-        if "arm64" in machine:
-            target = "T_arm64_apple"
-        else:
-            target = "T_amd64_apple"
-
-    # 2. Check for Linux / Other OS
-    else:
-        if "aarch64" in machine or "arm64" in machine:
-            target = "T_arm64"
-        elif "riscv64" in machine:
-            target = "T_rv64"
-        else:
+    match (system, machine):
+        case ("Linux", "x86_64"):
             target = "T_amd64_sysv"
+        case ("Darwin", "x86_64"):
+            target = "T_amd64_apple"
+        case ("Darwin", "arm64"):
+            target = "T_arm64_apple"
+        case ("Windows", "AMD64") | ("Windows", "x86_64"):
+            target = "T_amd64_win"
+        case ("Linux", "aarch64") | ("Linux", "arm64"):
+            target = "T_arm64"
+        case ("Linux", "riscv64"):
+            target = "T_rv64"
+        case ("Windows", "ARM64") | ("Windows", "aarch64"):
+            target = "T_arm64"  # no arm64_win in QBE yet
+        case _:
+            target = "T_amd64_sysv"  # default to something reasonable
 
     # Locate qbe/config.h relative to this script's directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
