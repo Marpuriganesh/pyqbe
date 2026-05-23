@@ -11,7 +11,29 @@ project(
 py = import('python').find_installation(pure: false)
 pybind11_dep = dependency('pybind11')
 
-py.extension_module('_pyqbe',
+# 1. Native cross-platform config.h generation
+cdata = configuration_data()
+
+# Detect host architecture to choose the correct target backend string
+host_cpu = host_machine.cpu_family()
+if host_cpu == 'x86_64'
+    cdata.set_quoted('Deftarg', 'amd64')
+elif host_cpu == 'aarch64'
+    cdata.set_quoted('Deftarg', 'arm64')
+elif host_cpu == 'riscv64'
+    cdata.set_quoted('Deftarg', 'rv64')
+else
+    error('Unsupported architecture: ' + host_cpu)
+endif
+
+# Dynamically generate config.h in the build directory
+configure_file(
+    output: 'config.h',
+    configuration: cdata
+)
+
+# 2. Select only the source files needed for the current host architecture
+qbe_sources = [
     'wrapper/binding.cpp',
     'wrapper/qbe_api.c',
     'qbe/util.c',
@@ -32,22 +54,39 @@ py.extension_module('_pyqbe',
     'qbe/spill.c',
     'qbe/rega.c',
     'qbe/emit.c',
-    'qbe/amd64/targ.c',
-    'qbe/amd64/sysv.c',
-    'qbe/amd64/isel.c',
-    'qbe/amd64/emit.c',
-    'qbe/amd64/winabi.c',
-    'qbe/arm64/targ.c',
-    'qbe/arm64/abi.c',
-    'qbe/arm64/isel.c',
-    'qbe/arm64/emit.c',
-    'qbe/rv64/targ.c',
-    'qbe/rv64/abi.c',
-    'qbe/rv64/isel.c',
-    'qbe/rv64/emit.c',
+]
+
+if host_cpu == 'x86_64'
+    qbe_sources += [
+        'qbe/amd64/targ.c',
+        'qbe/amd64/sysv.c',
+        'qbe/amd64/isel.c',
+        'qbe/amd64/emit.c',
+        'qbe/amd64/winabi.c',
+    ]
+elif host_cpu == 'aarch64'
+    qbe_sources += [
+        'qbe/arm64/targ.c',
+        'qbe/arm64/abi.c',
+        'qbe/arm64/isel.c',
+        'qbe/arm64/emit.c',
+    ]
+elif host_cpu == 'riscv64'
+    qbe_sources += [
+        'qbe/rv64/targ.c',
+        'qbe/rv64/abi.c',
+        'qbe/rv64/isel.c',
+        'qbe/rv64/emit.c',
+    ]
+endif
+
+# Build extension module with contextually selected architectures
+py.extension_module('_pyqbe',
+    qbe_sources,
     install: true,
-    dependencies : [pybind11_dep],
-    include_directories: 'qbe',
+    dependencies: [pybind11_dep],
+    # Include both root build dir (for config.h) and qbe directory
+    include_directories: include_directories('.', 'qbe'),
 )
 
 # Install pure Python package
@@ -56,6 +95,3 @@ py.install_sources(
     'pyqbe/_core.pyi',
     subdir: 'pyqbe',
 )
-
-# Generate config.h
-run_command('make', '-C', 'qbe', 'config.h', check: true)
