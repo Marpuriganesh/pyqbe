@@ -11,10 +11,25 @@ project(
 py = import('python').find_installation(pure: false)
 pybind11_dep = dependency('pybind11')
 
+# --- START WINDOWS MSVC COMPATIBILITY LAYER ---
+cc = meson.get_compiler('c')
 
-py.extension_module('_pyqbe',
+if cc.get_id() == 'msvc'
+  extra_c_args = [
+    '-D__attribute__(x)=', # Nullify GCC attributes for MSVC
+    '/wd4146'              # Suppress unary minus unsigned warnings
+  ]
+  
+  # This automatically applies the flags to all C files compiled in this project
+  add_project_arguments(extra_c_args, language: 'c')
+endif
+# --- END WINDOWS MSVC COMPATIBILITY LAYER ---
+wrapper_sources = [
     'wrapper/binding.cpp',
     'wrapper/qbe_api.c',
+]
+
+qbe_sources = [
     'qbe/util.c',
     'qbe/parse.c',
     'qbe/abi.c',
@@ -46,6 +61,12 @@ py.extension_module('_pyqbe',
     'qbe/rv64/abi.c',
     'qbe/rv64/isel.c',
     'qbe/rv64/emit.c',
+]
+
+combined_sources = wrapper_sources + qbe_sources
+
+py.extension_module('_pyqbe',
+    combined_sources,
     install: true,
     dependencies : [pybind11_dep],
     include_directories: 'qbe',
