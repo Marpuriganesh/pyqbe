@@ -129,7 +129,6 @@ int qbe_compile(const char *ir, const char *target, QBE_Buffer *buf) {
 
   buf->data = malloc(size + 1);
   buf->len = size;
-  buf->cap = size + 1;
 
   fread(buf->data, 1, size, outf);
 

@@ -10,7 +10,6 @@ extern "C" {
 typedef struct {
   char *data;
   size_t len;
-  size_t cap;
 } QBE_Buffer;
 
 // void qbe_buffer_init(QBE_Buffer *buf);
