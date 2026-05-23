@@ -14,16 +14,16 @@ pybind11_dep = dependency('pybind11')
 # --- START WINDOWS MSVC COMPATIBILITY LAYER ---
 cc = meson.get_compiler('c')
 
-if cc.get_id() == 'msvc'
-  extra_c_args = [
-    '-D__attribute__(x)=', # Nullify GCC attributes for MSVC
-    '/wd4146'              # Suppress unary minus unsigned warnings
-  ]
-  
-  # This automatically applies the flags to all C files compiled in this project
-  add_project_arguments(extra_c_args, language: 'c')
+# Add your static linking flags specifically for Windows environments
+extra_link_args = []
+if host_machine.system() == 'windows'
+    extra_link_args += [
+        '-static',
+        '-static-libgcc',
+        '-static-libstdc++',
+    ]
 endif
-# --- END WINDOWS MSVC COMPATIBILITY LAYER ---
+
 wrapper_sources = [
     'wrapper/binding.cpp',
     'wrapper/qbe_api.c',
@@ -70,6 +70,7 @@ py.extension_module('_pyqbe',
     install: true,
     dependencies : [pybind11_dep],
     include_directories: 'qbe',
+    link_args: extra_link_args, # Apply the static linking here
 )
 
 # Install pure Python package
